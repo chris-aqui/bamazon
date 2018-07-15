@@ -34,66 +34,71 @@ let connection = mysql.createConnection({
 });
 
 // initilize connection
-connection.connect(function(err) {
+connection.connect(function (err) {
 
   if (err) throw err;
-// display all items in store
+  // display all items in store
   showTable();
 
 });
 
 let showTable = () => {
-  connection.query("SELECT * FROM products", (err, res) =>{
+  connection.query("SELECT * FROM products", (err, res) => {
     res.forEach(element => {
-      console.log(element.item_id+ " | "
-      +element.product_name+ " | "
-      +element.department_name+ " | $"
-      +element.price+ " | "
-      +element.stock_quantity);
+      console.log(element.item_id + " | " +
+        element.product_name + " | " +
+        element.department_name + " | $" +
+        element.price + " | " +
+        element.stock_quantity);
     });
     customerOptions(res);
   });
   // start store
-};// end of function
+}; // end of function
 
 let customerOptions = (res) => {
-  inquirer.prompt([
-    {
-      type:'input',
-      name:'choise',
-      message:'\nWhat would you like to purchase?\n'
-    }
-  ]).then(function (answer){
+  inquirer.prompt([{
+    type: 'input',
+    name: 'choise',
+    message: '\nWhat would you like to purchase?\n'
+  }]).then(function (answer) {
     let correct = false;
+    if (answer.choise.toUpperCase() == "Q") {
+      process.exit();
+    };
     res.forEach((element, i) => {
-      if (element.product_name == answer.choise){
+      if (element.product_name == answer.choise) {
         correct = true;
         let product = answer.choise;
-        let id= i;
+        let id = i;
         // ask how much
-        inquirer.prompt(
-          {
-            type:'input',
-            name:'qty',
-            message:'Ho w many would you like to order?',
-            validate: function(value){
-              if(isNaN(value)==false){
-                return true;
-              } else {
-                return false;
-              }
+        inquirer.prompt({
+          type: 'input',
+          name: 'qty',
+          message: 'How many would you like to order?',
+          validate: function (value) {
+            if (isNaN(value) == false) {
+              return true;
+            } else {
+              return false;
             }
           }
-        ).then(function(answer){
-          if((res[id].stock_quantity-answer.qty)>0){
-            connection.query("UPDATE products SET stock_quantity='"+(res[id].stock_quantity-answer.qty)+"'WHERE product_name='"+product+"'", function(err, res2){
+        }).then(function (answer) {
+          if ((res[id].stock_quantity - answer.qty) > 0) {
+            connection.query("UPDATE products SET stock_quantity='" + (res[id].stock_quantity - answer.qty) + "'WHERE product_name='" + product + "'", function (err, res2) {
               console.log("Product Bought!");
               showTable();
-            })
-          }
+            });
+          } else {
+            console.log('Insufficient stock');
+            customerOptions(res);
+          };
         });
-
-      }; // end of if
+      } else if (i == res.length && correct == false) {
+        // if user enter an product that isnot in table then re run list
+        console.log('Not a valid selection');
+        customerOptions(res);
+      };
     }); // if of foreach
   }); // end of promise
 }; // end of function
