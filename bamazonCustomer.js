@@ -33,16 +33,67 @@ let connection = mysql.createConnection({
   database: "bamazon"
 });
 
+// initilize connection
 connection.connect(function(err) {
 
   if (err) throw err;
-
+// display all items in store
   showTable();
 
 });
 
-function showTable(){
+let showTable = () => {
   connection.query("SELECT * FROM products", (err, res) =>{
-    console.log(res);
+    res.forEach(element => {
+      console.log(element.item_id+ " | "
+      +element.product_name+ " | "
+      +element.department_name+ " | $"
+      +element.price+ " | "
+      +element.stock_quantity);
+    });
+    customerOptions(res);
   });
-};
+  // start store
+};// end of function
+
+let customerOptions = (res) => {
+  inquirer.prompt([
+    {
+      type:'input',
+      name:'choise',
+      message:'\nWhat would you like to purchase?\n'
+    }
+  ]).then(function (answer){
+    let correct = false;
+    res.forEach((element, i) => {
+      if (element.product_name == answer.choise){
+        correct = true;
+        let product = answer.choise;
+        let id= i;
+        // ask how much
+        inquirer.prompt(
+          {
+            type:'input',
+            name:'qty',
+            message:'Ho w many would you like to order?',
+            validate: function(value){
+              if(isNaN(value)==false){
+                return true;
+              } else {
+                return false;
+              }
+            }
+          }
+        ).then(function(answer){
+          if((res[id].stock_quantity-answer.qty)>0){
+            connection.query("UPDATE products SET stock_quantity='"+(res[id].stock_quantity-answer.qty)+"'WHERE product_name='"+product+"'", function(err, res2){
+              console.log("Product Bought!");
+              showTable();
+            })
+          }
+        });
+
+      }; // end of if
+    }); // if of foreach
+  }); // end of promise
+}; // end of function
