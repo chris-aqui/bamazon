@@ -26,4 +26,4 @@ VALUES
 ("Xbox One S", "Game", 71, 20);
 
 
-select * from products;
+-- select * from products;

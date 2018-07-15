@@ -15,3 +15,34 @@
 // ---
 //
 // - If this activity took you between 8-10 hours, then you've put enough time into this assignment. Feel free to stop here -- unless you want to take on the next challenge.
+const mysql = require("mysql");
+const inquirer = require("inquirer");
+require("dotenv").config();
+
+let connection = mysql.createConnection({
+  host: "localhost",
+
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+  user: "root",
+
+  // Your password
+  password: process.env.SQL_PASSWORD,
+  database: "bamazon"
+});
+
+connection.connect(function(err) {
+
+  if (err) throw err;
+
+  showTable();
+
+});
+
+function showTable(){
+  connection.query("SELECT * FROM products", (err, res) =>{
+    console.log(res);
+  });
+};

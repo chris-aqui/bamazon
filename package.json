@@ -1,0 +1,25 @@
+{
+  "name": "Homework-week12",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "start": "nodemon bamazonCustomer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christine-aqui/bamazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/christine-aqui/bamazon/issues"
+  },
+  "homepage": "https://github.com/christine-aqui/bamazon#readme",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "inquire": "^0.4.8",
+    "mysql": "^2.15.0"
+  }
+}
