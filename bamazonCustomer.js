@@ -60,7 +60,7 @@ let customerOptions = (res) => {
   inquirer.prompt([{
     type: 'input',
     name: 'choise',
-    message: '\nWhat would you like to purchase?\n'
+    message: '\nWhat would you like to purchase? Press Q to quit.\n'
   }]).then(function (answer) {
     let correct = false;
     if (answer.choise.toUpperCase() == "Q") {
@@ -85,7 +85,7 @@ let customerOptions = (res) => {
           }
         }).then(function (answer) {
           if ((res[id].stock_quantity - answer.qty) > 0) {
-            connection.query("UPDATE products SET stock_quantity='" + (res[id].stock_quantity - answer.qty) + "'WHERE product_name='" + product + "'", function (err, res2) {
+            connection.query("UPDATE products SET stock_quantity=?'" + (res[id].stock_quantity - answer.qty) + "'WHERE product_name=?'" + product + "'", function (err, res2) {
               console.log("Product Bought!");
               showTable();
             });
@@ -94,7 +94,10 @@ let customerOptions = (res) => {
             customerOptions(res);
           };
         });
-      } else if (i == res.length && correct == false) {
+      };
+      // console.log('something happened at index ', i);
+      // console.log('something happened at array length ', res.length-1 );
+      if (i == res.length-1 && correct == false) {
         // if user enter an product that isnot in table then re run list
         console.log('Not a valid selection');
         customerOptions(res);
