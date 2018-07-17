@@ -44,6 +44,7 @@ connection.connect(function (err) {
 
 let showTable = () => {
   connection.query("SELECT * FROM products", (err, res) => {
+    console.log("ID | Product Name | Department | Price | Stock");
     res.forEach(element => {
       console.log(element.item_id + " | " +
         element.product_name + " | " +
