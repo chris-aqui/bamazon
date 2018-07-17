@@ -73,19 +73,19 @@ let managerOptions = (res) => {
       addItem();
     };
     if (answer.choice == 'Update item qty') {
-      updateItem();
+      updateItem(res);
     }
-    if(answer.choice == 'show items'){
+    if (answer.choice == 'show items') {
       showTable();
     }
-    if(answer.choice == 'Quit'){
+    if (answer.choice == 'Quit') {
       connection.end();
     };
   });
 };
 
 let addItem = () => {
-  console.log('added item')
+  // console.log('added item')
   inquirer.prompt([{
       type: 'input',
       name: 'productname',
@@ -108,15 +108,45 @@ let addItem = () => {
     }
   ]).then(function (value) {
     console.log("adding");
-    connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('"+value.productname+"','"+value.departmentname+"',"+value.price+ ","+value.stock+");", function (err, res){
+    connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + value.productname + "','" + value.departmentname + "'," + value.price + "," + value.stock + ");", function (err, res) {
       if (err) throw err;
-      console.log(value.productname+ " Has been added to Bamazon");
+      console.log(value.productname + " Has been added to Bamazon");
       managerOptions();
     });
   });
 };
 
 
-let updateItem = () => {
-  console.log('updated item')
+let updateItem = (res) => {
+  // console.log('updated item');
+  inquirer.prompt([{
+      type: 'input',
+      name: 'productname',
+      message: 'What product would you like to update?'
+    },
+    {
+      type: 'input',
+      name: 'added',
+      message: 'How much stock would you like to add?'
+    }
+  ]).then(function (answer) {
+    // console.log('I got a something');
+    res.forEach((element, i) => {
+      if(element.product_name == answer.productname){
+        connection.query('UPDATE products SET stock_quantity = (stock_quantity +'+answer.added+ ') WHERE item_id='+element.item_id+';', function(err, res){
+          if (err) throw err;
+          // console.log(res);
+          if(res.affectedRows ==0){
+            console.log('notting happened');
+            showTable();
+          } else {
+            console.log('item updated');
+            showTable();
+          }
+        });
+      } else {
+        // console.log('No product with that name', i);
+      }
+    });
+  });
 };
